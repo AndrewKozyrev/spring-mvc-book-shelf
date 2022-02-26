@@ -36,12 +36,7 @@ public class BookService {
     }
 
     public boolean removeByRegex(String regex) {
-        try {
-            return bookRepo.removeItemByRegex(regex);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return bookRepo.removeItemByRegex(regex);
     }
 
     private void defaultInit() {

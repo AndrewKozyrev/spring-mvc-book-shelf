@@ -2,6 +2,7 @@ package org.example.app.services;
 
 import org.apache.log4j.Logger;
 import org.example.web.dto.Book;
+import org.h2.util.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -60,13 +61,12 @@ public class BookRepository<T> implements ProjectRepository<Book>, ApplicationCo
         return true;
     }
 
-    public boolean removeItemByRegex(String regex) throws NumberFormatException {
+    public boolean removeItemByRegex(String regex) {
         boolean state = false;
         for (Book book : retrieveAll()) {
             if (book.getAuthor().matches(regex) || book.getTitle().matches(regex)) {
-                logger.info("remove book completed: " + book);
                 state = removeItemById(book.getId());
-            } else {
+            } else if (StringUtils.isNumber(regex)) {
                 int d = Integer.parseInt(regex);
                 if (book.getSize().equals(d)) {
                     state = removeItemById(book.getId());
