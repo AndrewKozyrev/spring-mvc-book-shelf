@@ -31,12 +31,17 @@ public class BookService {
         }
     }
 
-    public boolean removeBookById(String bookIdToRemove) {
+    public boolean removeBookById(Integer bookIdToRemove) {
         return bookRepo.removeItemById(bookIdToRemove);
     }
 
     public boolean removeByRegex(String regex) {
-        return bookRepo.removeItemByRegex(regex);
+        try {
+            return bookRepo.removeItemByRegex(regex);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void defaultInit() {
