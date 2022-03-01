@@ -24,11 +24,7 @@ public class BookService {
 
 
     public void saveBook(Book book) {
-        if (book.getAuthor().isEmpty() && book.getTitle().isEmpty() && book.getSize() == null) {
-            logger.info("error persisting book: " + book);
-        } else {
-            bookRepo.store(book);
-        }
+        bookRepo.store(book);
     }
 
     public boolean removeBookById(Integer bookIdToRemove) {

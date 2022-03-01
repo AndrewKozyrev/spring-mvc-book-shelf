@@ -35,13 +35,15 @@
                 <tr>
                     <td>
                         <input type="text" placeholder="author" th:field="*{author}">
+                        <p th:if="${#fields.hasErrors('author')}">field author must not be blank</p>
                     </td>
                     <td>
                         <input type="text" placeholder="book_title" th:field="*{title}">
+                        <p th:if="${#fields.hasErrors('title')}">field title must not be blank</p>
                     </td>
                     <td>
                         <input type="text" placeholder="size (pages)" th:field="*{size}">
-                        <p th:if="${#fields.hasErrors()}">field valud must be numeric and less than 4 digits</p>
+                        <p th:if="${#fields.hasErrors('size')}">field value must be numeric and less than 4 digits</p>
                     </td>
                     <td>
                         <input type="submit" placeholder="save">
@@ -87,6 +89,9 @@
                     </td>
                     <td>
                         <input type="submit" value="remove by regex">
+                    </td>
+                    <td th:if="${errorMessage != null}">
+                        <p th:text="${errorMessage}"></p>
                     </td>
                 </tr>
             </table>

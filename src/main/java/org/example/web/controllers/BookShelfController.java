@@ -1,9 +1,12 @@
 package org.example.web.controllers;
 
 import org.apache.log4j.Logger;
+import org.example.app.exceptions.BookShelfFileUploadException;
+import org.example.app.exceptions.BookShelfRegexException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
 import org.example.web.dto.BookIdToRemove;
+import org.h2.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -19,6 +22,8 @@ import javax.validation.Valid;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 @Controller
@@ -59,26 +64,36 @@ public class BookShelfController {
     }
 
     @PostMapping("/remove")
-    public String removeBook(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResul, Model model) {
-        if (bindingResul.hasErrors()) {
+    public String removeBook(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
             model.addAttribute("bookList", bookService.getAllBooks());
             return "book_shelf";
-        }
-        else {
+        } else {
             bookService.removeBookById(bookIdToRemove.getId());
             return "redirect:/books/shelf";
         }
     }
 
     @PostMapping("removeByRegex")
-    public String removeBookByRegex(@RequestParam("queryRegex") String regex) {
+    public String removeBookByRegex(@RequestParam("queryRegex") String regex) throws Exception {
+        if (StringUtils.isNullOrEmpty(regex)) {
+            throw new BookShelfRegexException("empty regex.");
+        }
+        try {
+            Pattern.compile(regex);
+        } catch (PatternSyntaxException exception) {
+            throw new BookShelfRegexException("invalid regex");
+        }
         bookService.removeByRegex(regex);
         return "redirect:/books/shelf";
     }
 
     @PostMapping("/uploadFile")
-    public String uploadFile(@RequestParam("file")MultipartFile file) throws Exception {
+    public String uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+        if (file.isEmpty()) {
+            throw new BookShelfFileUploadException("File has not been chosen.");
+        }
         String name = file.getOriginalFilename();
         byte[] bytes = file.getBytes();
 
